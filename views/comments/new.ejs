@@ -1,0 +1,24 @@
+
+<% include ../partials/header.ejs%>
+
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="">
+            <h1>Add New Comments to <%= thisCamp.name %></h1>
+        </div>
+        <div class="">
+            <form action="/campgrounds/<%= thisCamp._id %>/comments" method="POST">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="comment[text]" placeholder="text">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-lg btn-primary btn-block">Submit</button>
+                </div>
+            </form>
+        </div>
+        <a href="/campgrounds/<%= thisCamp._id %>">go back</a>
+    </div>
+</div>
+
+
+<% include ../partials/footer.ejs%>
