@@ -25,12 +25,11 @@
                             <%= thisCamp.description%>
                         </p>
                         <p>
-                            <em>
-                                Submitted by
-                                <%= thisCamp.author.username %>
-                            </em>
+                        <p>
+                            <em>Submitted by: <a href="/users/ <%= thisCamp.author.id %>"> <%= thisCamp.author.username %> </a>,
+                                <%= moment(thisCamp.createdAt).fromNow() %></em>
                         </p>
-                        <% if (currentUser && thisCamp.author.id.equals(currentUser._id)) { %>
+                        <% if (currentUser && (thisCamp.author.id.equals(currentUser._id) || currentUser.isAdmin)) { %>
                         <a class="btn btn-warning" href="/campgrounds/<%= thisCamp._id %>/edit">Edit</a>
                         <form class="delete-form" action="/campgrounds/<%= thisCamp._id %>?_method=DELETE" method="post">
                             <button class="btn btn-xs btn-danger">Delete</button>
@@ -47,11 +46,11 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <%= comment.author.username %>
-                                <span class="pull-right"> 10天前 </span>
+                                <span class="pull-right"><%= moment(comment.createdAt).fromNow() %></span>
                                 <p>
                                     <%= comment.text%>
                                 </p>
-                                <% if (currentUser && comment.author.id.equals(currentUser._id)) { %>
+                                <% if (currentUser && (comment.author.id.equals(currentUser._id) || currentUser.isAdmin)) { %>
                                     <a class="btn btn-xs btn-warning" href="/campgrounds/<%= thisCamp._id %>/comments/<%= comment._id%>/edit">
                                         Edit
                                     </a>

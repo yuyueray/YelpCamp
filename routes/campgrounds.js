@@ -3,15 +3,32 @@ var express = require("express");
 var router = express.Router();
 var Campground = require("../models/campgrounds");
 var middleware = require("../middleware/index");
-
-router.get("/", function (req, res) {
-    Campground.find({}, function (err, allCampgrounds) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render("campgrounds/index", {camps : allCampgrounds, currentUser : req.user});
-        }
-    });
+//show all camps OR searching results
+router.get("/", function(req, res){
+    var noMatch = null;
+    if(req.query.search) {
+        var regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        // Get all campgrounds from DB
+        Campground.find({name: {"$regex": regex, "$options": "i"}}, function(err, allCampgrounds){
+            if(err){
+                console.log(err);
+            } else {
+                if(allCampgrounds.length < 1) {
+                    noMatch = "No campgrounds match that query, please try again.";
+                }
+                res.render("campgrounds/index",{camps : allCampgrounds, currentUser : req.user, page: "campgrounds", noMatch: noMatch});
+            }
+        });
+    } else {
+        // Get all campgrounds from DB
+        Campground.find({}, function(err, allCampgrounds){
+            if(err){
+                console.log(err);
+            } else {
+                res.render("campgrounds/index",{camps : allCampgrounds, currentUser : req.user, page: "campgrounds", noMatch: noMatch});
+            }
+        });
+    }
 });
 
 router.post("/", middleware.isLoggedIn, function (req, res) {
@@ -62,8 +79,11 @@ router.put("/:id", middleware.checkCampgroundOwner, function (req, res) {
     //     description: req.body.description};
     Campground.findByIdAndUpdate(req.params.id, req.body.campInfo, function (err, updatedCamp) {
         if (err) {
+            console.log("update camp err");
             res.redirect("/campgrounds");
         } else {
+            console.log(req.body.campInfo);
+            console.log(updatedCamp);
             res.redirect("/campgrounds/" + updatedCamp._id);
         }
     });
@@ -79,5 +99,8 @@ router.delete("/:id", middleware.checkCampgroundOwner, function (req, res) {
     })
 });
 
+function escapeRegex(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
 
 module.exports = router;
