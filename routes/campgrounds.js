@@ -3,6 +3,28 @@ var express = require("express");
 var router = express.Router();
 var Campground = require("../models/campgrounds");
 var middleware = require("../middleware/index");
+var multer = require('multer');
+var storage = multer.diskStorage({
+    filename: function(req, file, callback) {
+        callback(null, Date.now() + file.originalname);
+    }
+});
+var imageFilter = function (req, file, cb) {
+    // accept image files only
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+        return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+};
+var upload = multer({ storage: storage, fileFilter: imageFilter})
+
+var cloudinary = require('cloudinary');
+cloudinary.config({
+    cloud_name: 'ahsokaspace',
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 //show all camps OR searching results
 router.get("/", function(req, res){
     var noMatch = null;
@@ -31,22 +53,25 @@ router.get("/", function(req, res){
     }
 });
 
-router.post("/", middleware.isLoggedIn, function (req, res) {
-    var name = req.body.campName;
-    var price = req.body.campPrice;
-    var image = req.body.campImage;
-    var desc = req.body.campDesc;
-    var author = {
-        id: req.user._id,
-        username: req.user.username
-    };
-    var newCamp = {name: name, price: price, image: image, description : desc, author: author};
-    Campground.create(newCamp, function (err, newAdded) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.redirect("/campgrounds")
-        }
+router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res) {
+    cloudinary.uploader.upload(req.file.path, function(result) {
+        // add cloudinary url for the image to the campground object under image property
+        var image = result.secure_url;
+        var name = req.body.campName;
+        var price = req.body.campPrice;
+        var desc = req.body.campDesc;
+        var author = {
+            id: req.user._id,
+            username: req.user.username
+        };
+        var newCamp = {name: name, price: price, image: image, description : desc, author: author};
+        Campground.create(newCamp, function (err, newAdded) {
+            if (err) {
+                req.flash('error', err.message);
+                return res.redirect('back');
+            }
+            res.redirect('/campgrounds/' + newAdded.id);
+        });
     });
 });
 
@@ -73,20 +98,28 @@ router.get("/:id/edit", middleware.checkCampgroundOwner, function (req, res) {
 
 
 //Update
-router.put("/:id", middleware.checkCampgroundOwner, function (req, res) {
+router.put("/:id", middleware.checkCampgroundOwner, upload.single('image'), function (req, res) {
     // var updateCamp = {name: req.body.name,
     //     image: req.body.image,
     //     description: req.body.description};
-    Campground.findByIdAndUpdate(req.params.id, req.body.campInfo, function (err, updatedCamp) {
-        if (err) {
-            console.log("update camp err");
-            res.redirect("/campgrounds");
-        } else {
-            console.log(req.body.campInfo);
-            console.log(updatedCamp);
-            res.redirect("/campgrounds/" + updatedCamp._id);
-        }
+    cloudinary.uploader.upload(req.file.path, function(result) {
+        // add cloudinary url for the image to the campground object under image property
+        req.body.campInfo.image = result.secure_url;
+        Campground.findByIdAndUpdate(req.params.id, req.body.campInfo, function (err, updatedCamp) {
+            if (err) {
+                req.flash('error', err.message);
+                return res.redirect('back');
+            } else {
+                req.flash("success", "Update success :)");
+                res.redirect("/campgrounds/" + updatedCamp._id);
+            }
+        });
     });
+
+});
+
+router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res) {
+
 });
 //Delete
 router.delete("/:id", middleware.checkCampgroundOwner, function (req, res) {

@@ -1,36 +1,30 @@
 <% include ./partials/header.ejs %>
 
 <div class="row">
-    <h1 style="text-align: center;">Sign Up</h1>
-    <div style="width: 30%; margin: 25px auto;">
-        <form action="/register" method = "POST">
-            <div class="form-group">
-                <input class="form-control" type="text" name="username" placeholder="username">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="password" name="password" placeholder="password">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="firstName" placeholder="first name">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="lastName" placeholder="last name">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="email" name="email" placeholder="example@email.com">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="avatar" placeholder="avatar image url">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="adminCode" placeholder="Leave it empty">
-            </div>
-            <div class="form-group">
-                <button class="btn btn-lg btn-primary btn-block">Sign Up!</button>
-            </div>
+    <div class="col-md-12">
+        <form class="form-signin" action="/register" method="POST">
+            <h1 class="h3 mb-3 font-weight-normal">Sign up</h1>
+            <label for="inputUsername" class="sr-only">Username</label>
+            <input type="text" id="inputUsername" class="form-control" name="username" placeholder="Username" required autofocus>
+            <label for="inputPassword" class="sr-only">Password</label>
+            <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" required autofocus>
+            <label for="inputFirstname" class="sr-only">FirstName</label>
+            <input type="text" id="inputFirstname" class="form-control" name="firstName" placeholder="first name" required autofocus>
+            <label for="inputLastname" class="sr-only">LastName</label>
+            <input type="text" id="inputLastname" class="form-control" name="lastName" placeholder="last name" required autofocus>
+            <label for="inputEmail" class="sr-only">Email</label>
+            <input type="email" id="inputEmail" class="form-control" name="email" placeholder="example@email.com" required autofocus>
+            <label for="inputAvatar" class="sr-only">Avatar</label>
+            <input type="text" id="inputAvatar" class="form-control" name="avatar" placeholder="avatar image url" required autofocus>
+            <label for="inputAdminCode" class="sr-only">AdminCode</label>
+            <input type="text" id="inputAdminCode" class="form-control" name="adminCode" placeholder="Admin code(leave this empty)">
+
         </form>
-        <a href="/campgrounds">Go Back</a>
+        <div class="form-signin">
+            <a href="/campgrounds">Go Back</a>
+        </div>
     </div>
 </div>
+
 
 <% include ./partials/footer.ejs %>
