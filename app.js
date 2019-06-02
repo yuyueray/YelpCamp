@@ -57,6 +57,7 @@ app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
-app.listen(5000, process.env.IP, function () {
+
+app.listen(process.env.PORT || 8080, process.env.IP, function () {
     console.log("YC started.");
 });
