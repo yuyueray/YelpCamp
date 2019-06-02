@@ -19,8 +19,12 @@ var indexRoutes      = require("./routes/index"),
     commentRoutes    = require("./routes/comments"),
     campgroundRoutes = require("./routes/campgrounds");
 
+var dbURI = process.env.MONGOATLAS_URI || "mongodb://localhost:27017/yelp_camp";
+// mongoose.connect("mongodb://localhost:27017/yelp_camp", {useNewUrlParser : true});
+mongoose.connect(dbURI, {useNewUrlParser: true}).catch(function (reason) { console.log(reason) });
+    // .then(() => console.log("DB connected")).catch(err => console.log("DB error: ${err.message}"));
 
-mongoose.connect("mongodb://localhost:27017/yelp_camp", {useNewUrlParser : true});
+
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(express.static(__dirname + "/public"));
