@@ -1,5 +1,5 @@
 # YelpCamp
-This is my sample code for a YelpCamp project.
+This is my sample code for a YelpCamp project. A simple blog based website built on Node.js, MongoDB.
 
 ## Package dependencies
 package.json
